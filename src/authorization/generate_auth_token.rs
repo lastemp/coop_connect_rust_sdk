@@ -4,18 +4,15 @@ use crate::{models::models::AuthTokenResponseData, util::util::build_headers_gen
 
 pub async fn get_auth_token(
     grant_type: String,
-    user_name: String,
-    _password: String,
-    _scope: String,
     api_key: String,
     api_url: String,
 ) -> std::result::Result<String, String> {
     let mut params = Vec::new();
 
     params.push(("grant_type", grant_type));
-    params.push(("username", user_name));
-    params.push(("password", _password));
-    params.push(("scope", _scope));
+    println!("api_key {:?}", &api_key);
+    println!("params {:?}", &params);
+    println!("api_url {:?}", &api_url);
 
     let client = reqwest::Client::new();
 
@@ -35,6 +32,7 @@ pub async fn get_auth_token(
                 StatusCode::OK => {
                     match response.json::<AuthTokenResponseData>().await {
                         Ok(auth_token_data) => {
+                            println!("auth_token_data {:?}", auth_token_data);
                             // Handle success case
                             let k = String::from(""); //Default value.
                             let access_token = auth_token_data.access_token.as_ref().unwrap_or(&k);

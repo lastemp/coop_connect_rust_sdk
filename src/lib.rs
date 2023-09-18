@@ -38,16 +38,15 @@ use models::models::{
 };
 
 const AUTHORISATION_BEARER: &str = "Bearer";
-const GRANT_TYPE: &str = "password";
-const _SCOPE: &str = "apim:subscribe apim:api_key";
+const GRANT_TYPE: &str = "client_credentials";
 
-const AUTH_TOKEN_URL_SANDBOX: &str = "https://openapi-sandbox.co-opbank.co.ke/token";
-const AUTH_TOKEN_URL_PROD: &str = "https://openapi-sandbox.co-opbank.co.ke/token";
+const AUTH_TOKEN_URL_SANDBOX: &str = "https://developer.co-opbank.co.ke/token";
+const AUTH_TOKEN_URL_PROD: &str = "https://developer.co-opbank.co.ke/token";
 
 const ACCOUNT_BALANCE_URL_SANDBOX: &str =
-    "https://openapi-sandbox.co-opbank.co.ke/Enquiry/AccountBalance/1.0.0";
+    "https://developer.co-opbank.co.ke/Enquiry/AccountBalance/1.0.0";
 const ACCOUNT_BALANCE_URL_PROD: &str =
-    "https://openapi-sandbox.co-opbank.co.ke/Enquiry/AccountBalance/1.0.0";
+    "https://developer.co-opbank.co.ke/Enquiry/AccountBalance/1.0.0";
 const ACCOUNT_VALIDATION_URL_SANDBOX: &str =
     "https://developer.co-opbank.co.ke/Enquiry/Validation/Account/1.0.0";
 const ACCOUNT_VALIDATION_URL_PROD: &str =
@@ -83,11 +82,8 @@ const PESALINK_SEND_TO_PHONE_URL_PROD: &str =
 #[derive(Debug)]
 pub struct CoopGateway {
     grant_type: String,
-    admin_username: String,
-    admin_password: String,
-    _scope: String,
-    client_id: String,
-    client_secret: String,
+    consumer_key: String,
+    consumer_secret: String,
     auth_token_url: String,
     account_balance_url: String,
     account_validation_url: String,
@@ -101,26 +97,16 @@ pub struct CoopGateway {
 
 impl CoopGateway {
     pub fn new(
-        admin_username: String,
-        admin_password: String,
-        client_id: String,
-        client_secret: String,
+        consumer_key: String,
+        consumer_secret: String,
         _env: String,
     ) -> Result<Self, String> {
-        if admin_username.is_empty() || admin_username.replace(" ", "").trim().len() == 0 {
-            return Err(String::from("admin username is empty"));
+        if consumer_key.is_empty() || consumer_key.replace(" ", "").trim().len() == 0 {
+            return Err(String::from("consumer key is empty"));
         }
 
-        if admin_password.is_empty() || admin_password.replace(" ", "").trim().len() == 0 {
-            return Err(String::from("admin password is empty"));
-        }
-
-        if client_id.is_empty() || client_id.replace(" ", "").trim().len() == 0 {
-            return Err(String::from("client id is empty"));
-        }
-
-        if client_secret.is_empty() || client_secret.replace(" ", "").trim().len() == 0 {
-            return Err(String::from("client secret is empty"));
+        if consumer_secret.is_empty() || consumer_secret.replace(" ", "").trim().len() == 0 {
+            return Err(String::from("consumer secret is empty"));
         }
 
         if _env.is_empty() || _env.replace(" ", "").trim().len() == 0 {
@@ -136,7 +122,6 @@ impl CoopGateway {
         }
 
         let grant_type = GRANT_TYPE.to_string();
-        let _scope = _SCOPE.to_string();
 
         let auth_token_url = if _env.eq_ignore_ascii_case(&String::from("prod")) {
             AUTH_TOKEN_URL_PROD.to_string()
@@ -194,11 +179,8 @@ impl CoopGateway {
 
         Ok(Self {
             grant_type,
-            admin_username,
-            admin_password,
-            _scope,
-            client_id,
-            client_secret,
+            consumer_key,
+            consumer_secret,
             auth_token_url,
             account_balance_url,
             account_validation_url,
@@ -212,12 +194,12 @@ impl CoopGateway {
     }
 
     fn get_api_key(&self) -> String {
-        let client_id = &self.client_id;
-        let client_secret = &self.client_secret;
-        let mut password: String = client_id.to_string();
+        let consumer_key = &self.consumer_key;
+        let consumer_secret = &self.consumer_secret;
+        let mut password: String = consumer_key.to_string();
         let k = ":"; // Separator
         password.push_str(k);
-        password.push_str(&client_secret);
+        password.push_str(&consumer_secret);
         let encodedpassword = general_purpose::STANDARD.encode(password);
 
         let mut api_key = String::from("Basic");
@@ -247,17 +229,11 @@ impl CoopGateway {
 
     async fn get_auth_token(&self) -> std::result::Result<String, String> {
         let grant_type = &self.grant_type;
-        let user_name = &self.admin_username;
-        let _password = &self.admin_password;
-        let _scope = &self._scope;
         let api_key = &self.get_api_key();
         let api_url = &self.auth_token_url;
 
         let _result = authorization::generate_auth_token::get_auth_token(
             grant_type.to_string(),
-            user_name.to_string(),
-            _password.to_string(),
-            _scope.to_string(),
             api_key.to_string(),
             api_url.to_string(),
         )
@@ -283,6 +259,7 @@ impl CoopGateway {
 
         match _result {
             Ok(access_token_result) => {
+                println!("access_token_result {:?}", access_token_result);
                 // Handle success case
                 let access_token: String = self.parse_auth_token(access_token_result);
                 let api_url = &self.account_balance_url;
