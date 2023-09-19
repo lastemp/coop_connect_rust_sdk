@@ -34,6 +34,7 @@ use models::models::{
     AccountBalanceResponseData, AccountFundsTransferResponseData, AccountStatementResponseData,
     AccountTransactionsResponseData, AccountValidationResponseData, BadRequestErrorResponseData,
     EnquiryInputDetails, FullStatementInputDetails, FundsTransferInputDetails,
+    FundsTransferPesalinkAccountInputDetails, FundsTransferPesalinkPhoneInputDetails,
     TransactionsInputDetails, UnauthorizedErrorResponseData,
 };
 
@@ -466,7 +467,7 @@ impl CoopGateway {
 
     pub async fn pesalink_send_to_account(
         &self,
-        account_details: FundsTransferInputDetails,
+        account_details: FundsTransferPesalinkAccountInputDetails,
     ) -> std::result::Result<
         (
             Option<AccountFundsTransferResponseData>,
@@ -502,7 +503,7 @@ impl CoopGateway {
 
     pub async fn pesalink_send_to_phone(
         &self,
-        account_details: FundsTransferInputDetails,
+        account_details: FundsTransferPesalinkPhoneInputDetails,
     ) -> std::result::Result<
         (
             Option<AccountFundsTransferResponseData>,
@@ -537,19 +538,40 @@ impl CoopGateway {
     }
 }
 
-/*
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    fn test_coop_gateway() {
+        let consumer_key = String::from("***");
+        let consumer_secret = String::from("***");
+        let _env = String::from("sandbox");
+
+        let _result = CoopGateway::new(consumer_key, consumer_secret, _env);
+        assert_eq!(_result.is_ok(), true);
+    }
+
+    #[tokio::test]
+    async fn test_enquire_account_balance() {
+        let consumer_key = String::from("***");
+        let consumer_secret = String::from("***");
+        let _env = String::from("sandbox");
+
+        let _result = CoopGateway::new(consumer_key, consumer_secret, _env);
+
+        if let Ok(coop_connect) = _result {
+            let message_reference = String::from("***");
+            let account_number = String::from("***");
+
+            let _result = EnquiryInputDetails::new(message_reference, account_number);
+
+            if let Ok(account_details) = _result {
+                // Initiate the request through the sdk
+                let _output = coop_connect.enquire_account_balance(account_details);
+                let _result = _output.await;
+                assert_eq!(_result.is_ok(), true);
+            }
+        }
     }
 }
-*/

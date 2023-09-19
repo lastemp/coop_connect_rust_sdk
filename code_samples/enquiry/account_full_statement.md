@@ -1,6 +1,6 @@
-# account_balance
+# account_full_statement
 
-This example enquires about account holder's own Co-operative Bank accounts' balance as at now for the specified account number.
+This example enquires about account holder's own Co-operative Bank accounts' full statement for the specified account number, start date and end date.
 
 ## main.rs
 
@@ -8,7 +8,7 @@ This should contain below code:
 
 ```rust
 mod enquiry {
-    pub mod account_balance;
+    pub mod account_full_statement;
 }
 
 // SANDBOX
@@ -23,21 +23,25 @@ async fn main() {
     let consumer_secret = CONSUMER_SECRET_SANDBOX.to_string();
     let _env = ENVIRONMENT.to_string();
 
-    let x = enquiry::account_balance::test_enquire_account_balance(consumer_key, consumer_secret, _env);
+    let x = enquiry::account_full_statement::test_enquire_account_full_statement(
+        consumer_key,
+        consumer_secret,
+        _env,
+    );
 	
     x.await;
 }
 ```
 
-## account_balance.rs
+## account_full_statement.rs
 
-This module contains the function test_enquire_account_balance:
+This module contains the function test_enquire_account_full_statement:
 
 ```rust
-use coop_connect_rust_sdk::models::models::EnquiryInputDetails;
+use coop_connect_rust_sdk::models::models::FullStatementInputDetails;
 use coop_connect_rust_sdk::CoopGateway;
 
-pub async fn test_enquire_account_balance(
+pub async fn test_enquire_account_full_statement(
     consumer_key: String,
     consumer_secret: String,
     _env: String,
@@ -47,11 +51,14 @@ pub async fn test_enquire_account_balance(
     if let Ok(coop_connect) = _result {
         let message_reference = String::from("40ca18c6765086089a1");
         let account_number = String::from("***");
+        let start_date = String::from("2023-01-01"); // YYYY-MM-DD
+        let end_date = String::from("2023-07-01"); // YYYY-MM-DD
 
-        let _result = EnquiryInputDetails::new(message_reference, account_number);
+        let _result =
+            FullStatementInputDetails::new(message_reference, account_number, start_date, end_date);
 
         if let Ok(account_details) = _result {
-            let _output = coop_connect.enquire_account_balance(account_details);
+            let _output = coop_connect.enquire_account_full_statement(account_details);
             let _result = _output.await;
             if let Ok(result_message) = _result {
                 println!("result_message: {:?}", result_message);

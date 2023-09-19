@@ -2,13 +2,14 @@ use reqwest::StatusCode;
 
 use crate::{
     models::models::{
-        AccountFundsTransferResponseData, FundsTransferInputDetails, UnauthorizedErrorResponseData,
+        AccountFundsTransferResponseData, FundsTransferPesalinkAccountInputDetails,
+        UnauthorizedErrorResponseData,
     },
-    util::util::{build_account_funds_transfer_data, build_headers},
+    util::util::{build_account_funds_transfer_pesalink_account_data, build_headers},
 };
 
 pub async fn transfer(
-    account_details: FundsTransferInputDetails,
+    account_details: FundsTransferPesalinkAccountInputDetails,
     access_token: String,
     api_url: String,
 ) -> std::result::Result<
@@ -24,8 +25,12 @@ pub async fn transfer(
     let _destinations = account_details.get_destinations();
 
     // Lets build the request params as a struct
-    let transfer_data =
-        build_account_funds_transfer_data(message_reference, callback_url, _source, _destinations);
+    let transfer_data = build_account_funds_transfer_pesalink_account_data(
+        message_reference,
+        callback_url,
+        _source,
+        _destinations,
+    );
 
     let client = reqwest::Client::new();
 
