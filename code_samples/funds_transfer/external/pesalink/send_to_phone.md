@@ -1,18 +1,16 @@
 # send_to_phone
 
-PesaLink Send to Account Funds Transfer API will enable you to transfer funds from your own Co-operative Bank account to Bank account(s) in IPSL participating banks.
+PesaLink Send to Phone Funds Transfer API will enable you to transfer funds from your own Co-operative Bank account to a Phone Number(s) linked to a Bank account in an IPSL participating bank.
 
 ## main.rs
 
 This should contain below code:
 
 ```rust
-mod funds_transfer {
-    pub mod external {
-        pub mod pesalink {
-            pub mod send_to_phone;
-        }
-    }
+pub mod external {
+	pub mod pesalink {
+		pub mod send_to_phone;
+	}
 }
 
 // SANDBOX
@@ -27,7 +25,7 @@ async fn main() {
     let consumer_secret = CONSUMER_SECRET_SANDBOX.to_string();
     let _env = ENVIRONMENT.to_string();
 
-    let x = funds_transfer::external::pesalink::send_to_phone::test_pesalink_send_to_account(
+    let x = funds_transfer::external::pesalink::send_to_phone::test_pesalink_send_to_phone(
         consumer_key,
         consumer_secret,
         _env,
@@ -39,16 +37,15 @@ async fn main() {
 
 ## send_to_phone.rs
 
-This module contains the function test_pesalink_send_to_account:
+This module contains the function test_pesalink_send_to_phone:
 
 ```rust
 use coop_connect_rust_sdk::models::models::{
-    AccountSourceDetails, FundsTransferPesalinkAccountInputDetails,
-    PesalinkAccountDestinationDetails,
+    AccountSourceDetails, FundsTransferPesalinkPhoneInputDetails, PesalinkPhoneDestinationDetails,
 };
 use coop_connect_rust_sdk::CoopGateway;
 
-pub async fn test_pesalink_send_to_account(
+pub async fn test_pesalink_send_to_phone(
     consumer_key: String,
     consumer_secret: String,
     _env: String,
@@ -65,16 +62,14 @@ pub async fn test_pesalink_send_to_account(
 
         if let Ok(_source) = _result {
             let reference_number = String::from("40ca18c6765086089a1_1");
-            let account_number = String::from("***");
-            let bank_code = String::from("***");
+            let phone_number = String::from("07xxxxxxxx"); // 07xxxxxxxx
             let _amount: u32 = 500;
             let transaction_currency = String::from("KES");
             let _narration = String::from("Electricity Payment");
 
-            let _result = PesalinkAccountDestinationDetails::new(
+            let _result = PesalinkPhoneDestinationDetails::new(
                 reference_number,
-                account_number,
-                bank_code,
+                phone_number,
                 _amount,
                 transaction_currency,
                 _narration,
@@ -87,7 +82,7 @@ pub async fn test_pesalink_send_to_account(
                 let message_reference = String::from("40ca18c6765086089a1");
                 let callback_url = String::from("https://yourdomain.com/ft-callback");
 
-                let _result = FundsTransferPesalinkAccountInputDetails::new(
+                let _result = FundsTransferPesalinkPhoneInputDetails::new(
                     message_reference,
                     callback_url,
                     _source,
@@ -95,7 +90,7 @@ pub async fn test_pesalink_send_to_account(
                 );
 
                 if let Ok(account_details) = _result {
-                    let _output = coop_connect.pesalink_send_to_account(account_details);
+                    let _output = coop_connect.pesalink_send_to_phone(account_details);
                     let _result = _output.await;
                     if let Ok(result_message) = _result {
                         println!("result_message: {:?}", result_message);

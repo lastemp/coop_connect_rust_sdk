@@ -19,8 +19,8 @@ mod funds_transfer {
 }
 
 // SANDBOX
-const CONSUMER_KEY_SANDBOX: &str = "cAyBdsJ4iBOiV_BvVMppkQnOmBYa";
-const CONSUMER_SECRET_SANDBOX: &str = "zpXvBGhYpaq7M6biiJ_kc6PfKWsa";
+const CONSUMER_KEY_SANDBOX: &str = "***";
+const CONSUMER_SECRET_SANDBOX: &str = "***";
 
 const ENVIRONMENT: &str = "sandbox";
 
@@ -30,7 +30,7 @@ async fn main() {
     let consumer_secret = CONSUMER_SECRET_SANDBOX.to_string();
     let _env = ENVIRONMENT.to_string();
 
-    //let x = enquiry::account_balance::test_enquire_account_balance(consumer_key, consumer_secret, _env);
+    let x = enquiry::account_balance::test_enquire_account_balance(consumer_key, consumer_secret, _env);
     /*
     let x = enquiry::account_mini_statement::test_enquire_account_mini_statement(
         consumer_key,
@@ -73,12 +73,13 @@ async fn main() {
         _env,
     );
     */
-
+	/*
     let x = funds_transfer::external::pesalink::send_to_phone::test_pesalink_send_to_phone(
         consumer_key,
         consumer_secret,
         _env,
     );
+	*/
 
     x.await;
 }
