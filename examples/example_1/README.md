@@ -1,7 +1,7 @@
 # example_1
 
-This is a full working example which uses the [coop_connect_rust_sdk sdk](https://github.com/lastemp/coop_connect_rust_sdk).
-The API endpoints provided by Co-op Connect Gateway includes; AccountBalance, AccountMiniStatement, AccountFullStatement, IFTAccountToAccount, PesaLinkSendToAccount and PesaLinkSendToPhone (https://developer.co-opbank.co.ke/devportal/docs/). 
+This is a full working example which uses the [coop_connect_rust_sdk](https://github.com/lastemp/coop_connect_rust_sdk).
+The API endpoints provided by Co-op Connect Gateway includes; AccountBalance, AccountMiniStatement, AccountFullStatement, IFTAccountToAccount, PesaLinkSendToAccount and PesaLinkSendToPhone (https://developer.co-opbank.co.ke/devportal/docs/).
 
 The example has below listed dependencies:
 - [Serde](https://github.com/serde-rs/serde) for serializing and deserializing Rust data structures
